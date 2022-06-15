@@ -19,19 +19,36 @@ public class DKImageDataManager {
 	
 	public class func checkPhotoPermission(_ handler: @escaping (_ granted: Bool) -> Void) {
 		func hasPhotoPermission() -> Bool {
-			return PHPhotoLibrary.authorizationStatus() == .authorized
+            if #available(iOS 14.0, *) {
+                return PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized
+            } else {
+                return PHPhotoLibrary.authorizationStatus() == .authorized
+            }
 		}
 		
 		func needsToRequestPhotoPermission() -> Bool {
-			return PHPhotoLibrary.authorizationStatus() == .notDetermined
+            if #available(iOS 14.0, *) {
+                return PHPhotoLibrary.authorizationStatus(for: .readWrite) == .notDetermined
+            } else {
+                return PHPhotoLibrary.authorizationStatus() == .notDetermined
+            }
 		}
 		
 		hasPhotoPermission() ? handler(true) : (needsToRequestPhotoPermission() ?
-			PHPhotoLibrary.requestAuthorization({ status in
-				DispatchQueue.main.async(execute: { () in
-					hasPhotoPermission() ? handler(true) : handler(false)
-				})
-			}) : handler(false))
+            if #available(iOS 14.0, *) {
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+                    DispatchQueue.main.async(execute: { () in
+                        hasPhotoPermission() ? handler(true) : handler(false)
+                    })
+                }
+            } else {
+                PHPhotoLibrary.requestAuthorization({ status in
+                    DispatchQueue.main.async(execute: { () in
+                        hasPhotoPermission() ? handler(true) : handler(false)
+                    })
+                })
+            }
+            : handler(false))
 	}
 	
 	static let sharedInstance = DKImageDataManager()

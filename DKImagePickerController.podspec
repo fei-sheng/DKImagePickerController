@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'PhotoGallery' do |gallery|
     gallery.dependency 'DKImagePickerController/Core'
-    gallery.dependency 'DKPhotoGallery'
+    gallery.dependency 'DKPhotoGallery', :git => 'https://github.com/fei-sheng/DKPhotoGallery.git', :tag => '0.0.18'
 
     gallery.source_files = "Sources/Extensions/DKImageExtensionGallery.swift"
   end
