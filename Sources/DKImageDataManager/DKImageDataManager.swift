@@ -34,21 +34,27 @@ public class DKImageDataManager {
             }
 		}
 		
-		hasPhotoPermission() ? handler(true) : (needsToRequestPhotoPermission() ?
-            if #available(iOS 14.0, *) {
-                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
-                    DispatchQueue.main.async(execute: { () in
-                        hasPhotoPermission() ? handler(true) : handler(false)
+        if (hasPhotoPermission()) {
+            handler(true)
+        } else {
+            if (needsToRequestPhotoPermission()) {
+                if #available(iOS 14.0, *) {
+                    PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+                        DispatchQueue.main.async(execute: { () in
+                            hasPhotoPermission() ? handler(true) : handler(false)
+                        })
+                    }
+                } else {
+                    PHPhotoLibrary.requestAuthorization({ status in
+                        DispatchQueue.main.async(execute: { () in
+                            hasPhotoPermission() ? handler(true) : handler(false)
+                        })
                     })
                 }
             } else {
-                PHPhotoLibrary.requestAuthorization({ status in
-                    DispatchQueue.main.async(execute: { () in
-                        hasPhotoPermission() ? handler(true) : handler(false)
-                    })
-                })
+                handler(false)
             }
-            : handler(false))
+        }
 	}
 	
 	static let sharedInstance = DKImageDataManager()
