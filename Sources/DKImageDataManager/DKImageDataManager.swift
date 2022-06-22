@@ -20,7 +20,7 @@ public class DKImageDataManager {
 	public class func checkPhotoPermission(_ handler: @escaping (_ granted: Bool) -> Void) {
 		func hasPhotoPermission() -> Bool {
             if #available(iOS 14.0, *) {
-                return PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized
+                return PHPhotoLibrary.authorizationStatus(for: .readWrite) == .authorized || PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited
             } else {
                 return PHPhotoLibrary.authorizationStatus() == .authorized
             }
